@@ -1,3 +1,5 @@
+import * as SVG from 'svgjs';
+
 function component() {
     const element = document.createElement('div');
   
