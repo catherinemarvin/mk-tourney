@@ -8,8 +8,8 @@ document.getElementById("playerInputButton").addEventListener("click", () => {
 function createTournament() {
     let input = document.getElementById("playerInput") as HTMLInputElement;
     let playerNames: String[] = input.value.split(/\n/);
-    console.log(playerNames);
     stateManager.initializeTournament(playerNames);
+    console.log(stateManager);
 }
 
 class Player {
@@ -49,10 +49,18 @@ class StateManager {
 
     initializeTournament(playerNames: String[]) {
         playerNames.forEach(name => {
-            let player = new Player(name);
-            this.players.push(player);
+            this.players.push(new Player(name));
         });
-        console.log(this.players);
+
+        let numPlayers = playerNames.length;
+
+        if (numPlayers <= 4) {
+            let round = new Round();
+            round.players = this.players;
+
+            this.rounds.push(round);
+            return;
+        }
     }
 }
 
