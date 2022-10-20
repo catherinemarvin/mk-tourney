@@ -20,7 +20,7 @@
     "webpack-dev-server": "^4.11.1"
   },
   "dependencies": {
-    "lodash": "^4.17.21",
-    "svgjs": "^2.6.2"
+    "@svgdotjs/svg.js": "^3.1.2",
+    "lodash": "^4.17.21"
   }
 }
