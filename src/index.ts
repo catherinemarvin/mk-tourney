@@ -8,7 +8,7 @@ document.getElementById("playerInputButton").addEventListener("click", () => {
 
 function createTournament() {
     let input = document.getElementById("playerInput") as HTMLInputElement;
-    let playerNames: String[] = input.value.split(/\n/);
+    let playerNames: string[] = input.value.split(/\n/);
     stateManager.initializeTournament(playerNames);
     draw(stateManager);
 }

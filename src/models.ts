@@ -2,10 +2,10 @@ import * as _ from 'lodash';
 
 export class Player {
     static #globalCounter = 0;
-    id: Number;
-    name: String;
+    id: number;
+    name: string;
 
-    constructor(name: String) {
+    constructor(name: string) {
         this.id = Player.#globalCounter++;
         this.name = name;
     }
@@ -26,11 +26,11 @@ export class StateManager {
     players: Player[] = [];
     rounds: Round[] = [];
 
-    getPlayerByID(id: Number): Player|null {
+    getPlayerByID(id: number): Player|null {
         return this.players.find((p) => p.id === id) || null;
     }
 
-    getRoundByID(id: Number): Round|null {
+    getRoundByID(id: number): Round|null {
         return this.rounds.find((r) => r.id === id) || null;
     }
 
@@ -44,7 +44,7 @@ export class StateManager {
         return this.rounds.find(r=> _.isEmpty(r.nextRounds));
     }
 
-    initializePlayer(name: String): Player {
+    initializePlayer(name: string): Player {
         let player = new Player(name);
         this.players.push(player);
         return player;
@@ -56,7 +56,7 @@ export class StateManager {
         return round;
     }
 
-    initializeTournament(playerNames: String[]) {
+    initializeTournament(playerNames: string[]) {
         playerNames.forEach(name => this.initializePlayer(name));
 
         let numPlayers = playerNames.length;

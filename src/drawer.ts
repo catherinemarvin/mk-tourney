@@ -1,20 +1,50 @@
 import { Player, Round, StateManager } from "./models";
 
-import { SVG } from '@svgdotjs/svg.js';
+import { Container, SVG } from '@svgdotjs/svg.js';
 
-let roundHeight = 100;
-let heightPadding = 20;
+const roundHeight = 100;
+const heightPadding = 20;
 
-let roundWidth = 100;
-let widthPadding = 40;
+const roundWidth = 100;
+const widthPadding = 40;
 
-let levelLowerAmount = 50;
+const levelLowerAmount = 50;
 
-let markerHeight = 4;
-let markerWidth = 4;
+const markerHeight = 4;
+const markerWidth = 4;
 
 
 export default function draw(stateManager: StateManager) {
-    let draw = SVG().addTo('body').size(300, 300);
-    draw.rect(100, 100).attr({fill: '#f06'});
+    const draw = SVG().addTo("body").size(3 * (roundWidth + widthPadding), 3 * (roundHeight + heightPadding + levelLowerAmount));
+    const marker = draw.marker(markerWidth, markerHeight, add => {
+        add.polygon([
+            [0, 0],
+            [markerWidth, markerHeight / 2],
+            [0, markerHeight],
+        ]);
+    }).ref(0, markerHeight / 2);
+
+    const startingContainer = draw.nested().move(0,0);
+
+    drawLevel(startingContainer, stateManager.startingRounds)
+}
+
+function drawLevel(container: Container, rounds: Round[]) {
+    let dy = 0;
+
+    for (const r of rounds) {
+        let rect = container.rect(roundHeight, roundWidth).move(0, dy).attr({ fill: '#f06'});
+        let playersContainer = container.nested().move(0, dy);
+        drawPlayers(playersContainer, r.players);
+
+        dy += roundHeight + heightPadding;
+    }
+}
+
+function drawPlayers(container: Container, players: Player[]) {
+    let dy = 0;
+    for (const p of players) {
+        container.text(p.name).move(0,dy).font({fill: '#000'});
+        dy += 20;
+    }
 }
