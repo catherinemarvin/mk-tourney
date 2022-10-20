@@ -25,8 +25,12 @@ export default function draw(stateManager: StateManager) {
     }).ref(0, markerHeight / 2);
 
     const startingContainer = draw.nested().move(0,0);
+    const intermediateContainer = draw.nested().move(roundWidth + widthPadding, levelLowerAmount);
+    const finalContainer = draw.nested().move(2 * (roundWidth + widthPadding), levelLowerAmount * 2);
 
     drawLevel(startingContainer, stateManager.startingRounds)
+    drawLevel(intermediateContainer, stateManager.intermediateRounds);
+    drawLevel(finalContainer, [stateManager.finalRound]);
 }
 
 function drawLevel(container: Container, rounds: Round[]) {

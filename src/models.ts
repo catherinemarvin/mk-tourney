@@ -40,6 +40,12 @@ export class StateManager {
         return this.rounds.filter(r => nextRounds.indexOf(r.id) === -1);
     }
 
+    get intermediateRounds(): Round[] {
+        return this.rounds.filter(r => {
+            return this.startingRounds.indexOf(r) === -1 && this.finalRound !== r;
+        })
+    }
+
     get finalRound(): Round {
         return this.rounds.find(r=> _.isEmpty(r.nextRounds));
     }
