@@ -47,6 +47,16 @@ class StateManager {
         return this.rounds.find((r) => r.id === id) || null;
     }
 
+    get startingRounds(): Round[] {
+        let nextRounds: Number[] = _.uniqBy(this.rounds.flatMap(r => r.nextRounds).map(r => r.id));
+
+        return this.rounds.filter(r => nextRounds.indexOf(r.id) === -1);
+    }
+
+    get finalRound(): Round {
+        return this.rounds.find(r=> _.isEmpty(r.nextRounds));
+    }
+
     initializePlayer(name: String): Player {
         let player = new Player(name);
         this.players.push(player);
