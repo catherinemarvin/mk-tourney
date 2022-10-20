@@ -2,16 +2,12 @@ import { Player, Round, StateManager } from './models';
 import draw from './drawer';
 
 
-document.getElementById("playerInputButton").addEventListener("click", () => {
-    createTournament();
-});
+document.getElementById("playerInputButton").addEventListener("click", createTournament);
 
 function createTournament() {
-    let input = document.getElementById("playerInput") as HTMLInputElement;
-    let playerNames: string[] = input.value.split(/\n/);
+    const input = document.getElementById("playerInput") as HTMLInputElement;
+    const playerNames: string[] = input.value.trim().split(/\n/);
     stateManager.initializeTournament(playerNames);
-    console.log(stateManager);
-    console.log(stateManager.intermediateRounds);
     draw(stateManager);
 }
 
