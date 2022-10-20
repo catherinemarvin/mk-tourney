@@ -1,6 +1,7 @@
 import { Player, Round, StateManager } from "./models";
 
-import { Container, SVG } from '@svgdotjs/svg.js';
+import * as _ from 'lodash';
+import { Container, SVG, find, Marker } from '@svgdotjs/svg.js';
 
 const roundHeight = 100;
 const heightPadding = 20;
@@ -31,14 +32,22 @@ export default function draw(stateManager: StateManager) {
     drawLevel(startingContainer, stateManager.startingRounds)
     drawLevel(intermediateContainer, stateManager.intermediateRounds);
     drawLevel(finalContainer, [stateManager.finalRound]);
+
+    for (const r of stateManager.startingRounds) {
+        drawNextRoundArrows(draw, r, stateManager, marker);
+    }
+    for (const r of stateManager.intermediateRounds) {
+        drawNextRoundArrows(draw, r, stateManager, marker);
+    }
 }
 
 function drawLevel(container: Container, rounds: Round[]) {
     let dy = 0;
 
     for (const r of rounds) {
-        let rect = container.rect(roundHeight, roundWidth).move(0, dy).attr({ fill: '#f06'});
-        let playersContainer = container.nested().move(0, dy);
+        const rect = container.rect(roundHeight, roundWidth).move(0, dy).attr({ fill: '#f06'});
+        rect.node.dataset.roundId = r.id.toString();
+        const playersContainer = container.nested().move(0, dy);
         drawPlayers(playersContainer, r.players);
 
         dy += roundHeight + heightPadding;
@@ -48,7 +57,44 @@ function drawLevel(container: Container, rounds: Round[]) {
 function drawPlayers(container: Container, players: Player[]) {
     let dy = 0;
     for (const p of players) {
-        container.text(p.name).move(0,dy).font({fill: '#000'});
+        const player = container.text(p.name).move(0,dy).font({fill: '#000'});
+        player.node.dataset.roundID = p.id.toString();
         dy += 20;
+    }
+}
+
+function drawNextRoundArrows(draw: Container, round: Round, stateManager: StateManager, marker: Marker) {
+    const sourceRect = _.head(find(`[data-round-id="${round.id}"]`));
+    const sourceBBox = sourceRect.rbox(draw);
+
+    for (const nextRound of round.nextRounds) {
+        const destRect = _.head(find(`[data-round-id="${nextRound.id}"]`));
+        const destBBox = destRect.rbox(draw);
+
+        // Check if directly adjacent
+        if ((_.includes(stateManager.startingRounds, round) && _.includes(stateManager.intermediateRounds, nextRound)) ||
+            (_.includes(stateManager.intermediateRounds, round) && stateManager.finalRound === nextRound)) {
+                draw.line(
+                    sourceBBox.x + sourceRect.width(), 
+                    sourceBBox.y + (sourceRect.height() / 2),
+                    destBBox.x - markerWidth * 4,
+                    sourceBBox.y + (sourceRect.height() / 2))
+                .stroke({ color: 'black', width: 4})
+                .marker('end', marker);
+
+                continue;
+            }
+
+        // Otherwise: start to end
+        // else, draw an arrow from the top
+        draw.polyline(
+            [
+                [sourceBBox.x + sourceBBox.width, sourceBBox.y + 4],
+                [destBBox.x + (destBBox.width / 2), sourceBBox.y + 4],
+                [destBBox.x + (destBBox.width / 2), destBBox.y - markerWidth * 4]
+            ])
+            .fill('none')
+            .stroke({ color: 'black', width: 4 })
+            .marker('end', marker);
     }
 }
