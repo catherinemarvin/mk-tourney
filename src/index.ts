@@ -1,4 +1,5 @@
 import * as SVG from 'svgjs';
+import * as _ from 'lodash';
 
 
 document.getElementById("playerInputButton").addEventListener("click", () => {
@@ -28,7 +29,6 @@ class Round {
     id: Number;
     players: Player[] = [];
     nextRounds: Round[] = [];
-    previousRounds: Round[] = [];
 
     constructor() {
         this.id = Round.#globalCounter++;
@@ -47,20 +47,62 @@ class StateManager {
         return this.rounds.find((r) => r.id === id) || null;
     }
 
+    initializePlayer(name: String): Player {
+        let player = new Player(name);
+        this.players.push(player);
+        return player;
+    }
+
+    initializeRound(): Round {
+        let round = new Round();
+        this.rounds.push(round);
+        return round;
+    }
+
     initializeTournament(playerNames: String[]) {
-        playerNames.forEach(name => {
-            this.players.push(new Player(name));
-        });
+        playerNames.forEach(name => this.initializePlayer(name));
 
         let numPlayers = playerNames.length;
 
         if (numPlayers <= 4) {
-            let round = new Round();
+            let round = this.initializeRound();
             round.players = this.players;
 
             this.rounds.push(round);
             return;
         }
+
+        let numFullRounds = Math.floor(numPlayers / 4);
+        let numLeftoverRounds = numPlayers % 4;
+
+        if (numFullRounds > 4) {
+            // TODO(catherine): Do recursion
+            // round1Winners = numFullRounds
+            // solve(round1Winners)
+            // point round1Winners to fill starting from beginning
+            return;
+        }
+        if (numLeftoverRounds === 0) {
+            let finalRound = this.initializeRound();
+            _.chunk(this.players, 4).forEach(chunk => {
+                let round = this.initializeRound();
+                round.players = chunk;
+                round.nextRounds.push(finalRound);
+            });
+            return;
+        }
+        let finalRound = this.initializeRound();
+        let extraRound = this.initializeRound();
+        _.chunk(this.players, 4).forEach(chunk => {
+            if (chunk.length === 4) {
+                let round = this.initializeRound();
+                round.players = chunk;
+                round.nextRounds = [extraRound, finalRound];
+            } else {
+                extraRound.players = chunk;
+                extraRound.nextRounds.push(finalRound);
+            }
+        })
     }
 }
 
