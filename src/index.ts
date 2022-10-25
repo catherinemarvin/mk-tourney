@@ -18,4 +18,6 @@ stateManager.onPlayerClick = (roundId: number, playerId: number) => {
 
     stateManager.advancePlayer(round, player);
     console.log(stateManager);
+
+    draw(stateManager);
 }

@@ -16,7 +16,8 @@ const markerWidth = 4;
 
 
 export function draw(stateManager: StateManager) {
-    const draw = SVG().addTo("body").size(3 * (roundWidth + widthPadding), 3 * (roundHeight + heightPadding + levelLowerAmount));
+    SVG("#tournamentDisplay").clear();
+    const draw = SVG().addTo("#tournamentDisplay").size(3 * (roundWidth + widthPadding), 3 * (roundHeight + heightPadding + levelLowerAmount));
     const marker = draw.marker(markerWidth, markerHeight, add => {
         add.polygon([
             [0, 0],
@@ -39,10 +40,6 @@ export function draw(stateManager: StateManager) {
     for (const r of stateManager.intermediateRounds) {
         drawNextRoundArrows(draw, r, stateManager, marker);
     }
-}
-
-export function advancePlayer(roundId: number, playerId: number) {
-
 }
 
 function drawLevel(container: Container, rounds: Round[], onPlayerClick: OnPlayerClickFunction) {
