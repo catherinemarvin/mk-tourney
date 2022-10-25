@@ -65,6 +65,9 @@ function drawPlayers(container: Container, round: Round, onPlayerClick: OnPlayer
         player.click(() => onPlayerClick(round.id, p.id));
         dy += 20;
     }
+
+    // draw text
+    container.text(`Num left: ${round.numToFinalRound + round.numToIntermediateRound}`).move(0,dy);
 }
 
 function drawNextRoundArrows(draw: Container, round: Round, stateManager: StateManager, marker: Marker) {

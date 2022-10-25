@@ -123,15 +123,15 @@ export class StateManager {
 
     initializeNextRoundNumbers() {
         const finalRound = this.finalRound;
-        finalRound.numToFinalRound = -1;
-        finalRound.numToIntermediateRound = -1;
+        finalRound.numToFinalRound = 0;
+        finalRound.numToIntermediateRound = 0;
 
         const startingRounds = this.startingRounds;
         
         if (startingRounds.length % 2 === 0) {
             for (const r of startingRounds) {
                 r.numToFinalRound = 4 / startingRounds.length;
-                r.numToIntermediateRound = -1;
+                r.numToIntermediateRound = 0;
             }
             return;
         }
