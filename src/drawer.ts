@@ -46,7 +46,7 @@ function drawLevel(container: Container, rounds: Round[], onPlayerClick: OnPlaye
     let dy = 0;
 
     for (const r of rounds) {
-        const rect = container.rect(roundHeight, roundWidth).move(0, dy).attr({ fill: '#f06'});
+        const rect = container.rect(roundHeight, roundWidth).move(0, dy).attr({ fill: '#BDE0FE'});
         rect.node.dataset.roundId = r.id.toString();
         const playersContainer = container.nested().move(0, dy);
         drawPlayers(playersContainer, r, onPlayerClick);
@@ -58,7 +58,7 @@ function drawLevel(container: Container, rounds: Round[], onPlayerClick: OnPlaye
 function drawPlayers(container: Container, round: Round, onPlayerClick: OnPlayerClickFunction) {
     let dy = 0;
     for (const p of round.players) {
-        const player = container.text(p.name).move(0,dy).font({fill: '#000'});
+        const player = container.text(p.name).move(0,dy).font({fill: '#000000'});
         player.node.dataset.playerId = p.id.toString();
         player.node.dataset.roundId = round.id.toString();
         

@@ -1,6 +1,8 @@
 import { Player, Round, StateManager } from './models';
 import { draw } from './drawer';
 
+import './index.css';
+
 
 document.getElementById("playerInputButton").addEventListener("click", createTournament);
 
