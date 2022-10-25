@@ -1,4 +1,4 @@
-import { Player, Round, StateManager } from "./models";
+import { OnPlayerClickFunction, Player, Round, StateManager } from "./models";
 
 import * as _ from 'lodash';
 import { Container, SVG, find, Marker } from '@svgdotjs/svg.js';
@@ -15,7 +15,7 @@ const markerHeight = 4;
 const markerWidth = 4;
 
 
-export default function draw(stateManager: StateManager) {
+export function draw(stateManager: StateManager) {
     const draw = SVG().addTo("body").size(3 * (roundWidth + widthPadding), 3 * (roundHeight + heightPadding + levelLowerAmount));
     const marker = draw.marker(markerWidth, markerHeight, add => {
         add.polygon([
@@ -29,9 +29,9 @@ export default function draw(stateManager: StateManager) {
     const intermediateContainer = draw.nested().move(roundWidth + widthPadding, levelLowerAmount);
     const finalContainer = draw.nested().move(2 * (roundWidth + widthPadding), levelLowerAmount * 2);
 
-    drawLevel(startingContainer, stateManager.startingRounds)
-    drawLevel(intermediateContainer, stateManager.intermediateRounds);
-    drawLevel(finalContainer, [stateManager.finalRound]);
+    drawLevel(startingContainer, stateManager.startingRounds, stateManager.onPlayerClick)
+    drawLevel(intermediateContainer, stateManager.intermediateRounds, stateManager.onPlayerClick);
+    drawLevel(finalContainer, [stateManager.finalRound], stateManager.onPlayerClick);
 
     for (const r of stateManager.startingRounds) {
         drawNextRoundArrows(draw, r, stateManager, marker);
@@ -41,24 +41,31 @@ export default function draw(stateManager: StateManager) {
     }
 }
 
-function drawLevel(container: Container, rounds: Round[]) {
+export function advancePlayer(roundId: number, playerId: number) {
+
+}
+
+function drawLevel(container: Container, rounds: Round[], onPlayerClick: OnPlayerClickFunction) {
     let dy = 0;
 
     for (const r of rounds) {
         const rect = container.rect(roundHeight, roundWidth).move(0, dy).attr({ fill: '#f06'});
         rect.node.dataset.roundId = r.id.toString();
         const playersContainer = container.nested().move(0, dy);
-        drawPlayers(playersContainer, r.players);
+        drawPlayers(playersContainer, r, onPlayerClick);
 
         dy += roundHeight + heightPadding;
     }
 }
 
-function drawPlayers(container: Container, players: Player[]) {
+function drawPlayers(container: Container, round: Round, onPlayerClick: OnPlayerClickFunction) {
     let dy = 0;
-    for (const p of players) {
+    for (const p of round.players) {
         const player = container.text(p.name).move(0,dy).font({fill: '#000'});
-        player.node.dataset.roundID = p.id.toString();
+        player.node.dataset.playerId = p.id.toString();
+        player.node.dataset.roundId = round.id.toString();
+        
+        player.click(() => onPlayerClick(round.id, p.id));
         dy += 20;
     }
 }

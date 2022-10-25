@@ -1,5 +1,7 @@
 import * as _ from 'lodash';
 
+export type OnPlayerClickFunction = (roundId: number, playerId: number) => void;
+
 export class Player {
     static #globalCounter = 0;
     id: number;
@@ -28,6 +30,7 @@ export class Round {
 export class StateManager {
     players: Player[] = [];
     rounds: Round[] = [];
+    onPlayerClick: OnPlayerClickFunction;
 
     getPlayerByID(id: number): Player|null {
         return this.players.find((p) => p.id === id) || null;
@@ -36,6 +39,7 @@ export class StateManager {
     getRoundByID(id: number): Round|null {
         return this.rounds.find((r) => r.id === id) || null;
     }
+
 
     get startingRounds(): Round[] {
         let nextRounds: Number[] = _.uniqBy(this.rounds.flatMap(r => r.nextRounds).map(r => r.id));
@@ -149,6 +153,22 @@ export class StateManager {
             startingRounds[i % startingRounds.length].numToIntermediateRound++;
             totalNumToIntermediate--;
             i++;
+        }
+    }
+
+    // Returns the Round that the player advances to
+    advancePlayer(round: Round, player: Player): Round {
+        if (round.numToFinalRound > 0) {
+            this.finalRound.players.push(player);
+            round.numToFinalRound--;
+            return this.finalRound;
+        } else if (round.numToIntermediateRound > 0) {
+            this.intermediateRounds[0].players.push(player);
+            round.numToIntermediateRound--;
+            return this.intermediateRounds[0];
+        } else {
+            console.log("Don't advance");
+            return null;
         }
     }
 }

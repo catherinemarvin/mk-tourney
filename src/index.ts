@@ -1,5 +1,5 @@
 import { Player, Round, StateManager } from './models';
-import draw from './drawer';
+import { draw } from './drawer';
 
 
 document.getElementById("playerInputButton").addEventListener("click", createTournament);
@@ -12,3 +12,10 @@ function createTournament() {
 }
 
 let stateManager = new StateManager();
+stateManager.onPlayerClick = (roundId: number, playerId: number) => {
+    const round = stateManager.getRoundByID(roundId);
+    const player = stateManager.getPlayerByID(playerId);
+
+    stateManager.advancePlayer(round, player);
+    console.log(stateManager);
+}
