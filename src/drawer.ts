@@ -27,8 +27,8 @@ export function draw(stateManager: StateManager) {
     }).ref(0, markerHeight / 2);
 
     const startingContainer = draw.nested().move(0,0);
-    const intermediateContainer = draw.nested().move(roundWidth + widthPadding, levelLowerAmount);
-    const finalContainer = draw.nested().move(2 * (roundWidth + widthPadding), levelLowerAmount * 2);
+    const intermediateContainer = draw.nested().move(roundWidth + widthPadding, (roundHeight + heightPadding) * stateManager.startingRounds.length);
+    const finalContainer = draw.nested().move(2 * (roundWidth + widthPadding), (roundHeight + heightPadding) * (stateManager.startingRounds.length + stateManager.intermediateRounds.length));
 
     drawLevel(startingContainer, stateManager.startingRounds, stateManager.onPlayerClick)
     drawLevel(intermediateContainer, stateManager.intermediateRounds, stateManager.onPlayerClick);
@@ -78,15 +78,21 @@ function drawNextRoundArrows(draw: Container, round: Round, stateManager: StateM
         // Check if directly adjacent
         if ((_.includes(stateManager.startingRounds, round) && _.includes(stateManager.intermediateRounds, nextRound)) ||
             (_.includes(stateManager.intermediateRounds, round) && stateManager.finalRound === nextRound)) {
-                draw.line(
-                    sourceBBox.x + sourceRect.width(), 
-                    sourceBBox.y + (sourceRect.height() / 2),
-                    destBBox.x - markerWidth * 4,
-                    sourceBBox.y + (sourceRect.height() / 2))
-                .stroke({ color: 'black', width: 4})
-                .marker('end', marker);
+              // Draw an arrow from the middle
+              draw
+                .polyline([
+                  [sourceBBox.x + sourceBBox.width, sourceBBox.y + sourceRect.height() / 2],
+                  [destBBox.x + destBBox.width / 2, sourceBBox.y + sourceRect.height() / 2],
+                  [
+                    destBBox.x + destBBox.width / 2,
+                    destBBox.y - markerWidth * 4,
+                  ],
+                ])
+                .fill("none")
+                .stroke({ color: "black", width: 4 })
+                .marker("end", marker);
 
-                continue;
+              continue;
             }
 
         // Otherwise: start to end
