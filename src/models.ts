@@ -13,9 +13,12 @@ export class Player {
 
 export class Round {
     static #globalCounter = 0;
-    id: Number;
+    id: number;
     players: Player[] = [];
     nextRounds: Round[] = [];
+
+    numToFinalRound: number = 0;
+    numToIntermediateRound: number = 0;
 
     constructor() {
         this.id = Round.#globalCounter++;
@@ -48,6 +51,10 @@ export class StateManager {
 
     get finalRound(): Round {
         return this.rounds.find(r=> _.isEmpty(r.nextRounds));
+    }
+
+    getPreviousRounds(round: Round): Round[] {
+        return this.rounds.filter(r => _.includes(r.nextRounds, round));
     }
 
     initializePlayer(name: string): Player {
@@ -92,6 +99,7 @@ export class StateManager {
                 round.players = chunk;
                 round.nextRounds.push(finalRound);
             });
+            this.initializeNextRoundNumbers();
             return;
         }
         let finalRound = this.initializeRound();
@@ -106,5 +114,41 @@ export class StateManager {
                 extraRound.nextRounds.push(finalRound);
             }
         })
+        this.initializeNextRoundNumbers();
+    }
+
+    initializeNextRoundNumbers() {
+        const finalRound = this.finalRound;
+        finalRound.numToFinalRound = -1;
+        finalRound.numToIntermediateRound = -1;
+
+        const startingRounds = this.startingRounds;
+        
+        if (startingRounds.length % 2 === 0) {
+            for (const r of startingRounds) {
+                r.numToFinalRound = 4 / startingRounds.length;
+                r.numToIntermediateRound = -1;
+            }
+            return;
+        }
+
+        for (const r of startingRounds) {
+            r.numToFinalRound = 1;
+        }
+        const numStartingToFinal = startingRounds.reduce((prev, curr) => prev + curr.numToFinalRound, 0);
+
+
+
+        const intermediateRound = this.intermediateRounds[0];
+        intermediateRound.numToFinalRound = 4 - numStartingToFinal;
+
+        let totalNumToIntermediate = 4 - intermediateRound.players.length;
+
+        let i = 0;
+        while (totalNumToIntermediate > 0) {
+            startingRounds[i % startingRounds.length].numToIntermediateRound++;
+            totalNumToIntermediate--;
+            i++;
+        }
     }
 }
